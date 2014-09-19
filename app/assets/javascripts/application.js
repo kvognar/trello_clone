@@ -13,6 +13,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery.ui.sortable
+//= require_tree ../../../vendor/assets/javascripts
 //= require underscore
 //= require backbone
 //= require bootstrap

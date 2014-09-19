@@ -1,0 +1,12 @@
+<h4>Create a new list</h4>
+<form id="new-list-form">
+  <input type="hidden" name="list[board_id]" value="<%= board.id %>">
+  <label for="list-title">
+    Title
+  </label>
+  <input 
+    type="text"
+    name="list[title]"
+    id="list-title">
+  <input type="submit" value="Go">
+</form>

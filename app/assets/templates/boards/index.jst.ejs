@@ -1,0 +1,8 @@
+<h1>Mello Trello</h1>
+<% boards.each(function(board) { %>
+  <h3>
+    <a href="#/boards/<%= board.id %>"><%= board.escape("title") %></a>
+  </h3>
+<% }); %>
+
+<div class="board-form"></div>
