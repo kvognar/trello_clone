@@ -6,6 +6,7 @@ TrelloClone.Models.List = Backbone.Model.extend({
       this._cards = new TrelloClone.Collections.Cards([], {
         list: this
       });
+      this._cards.comparator = 'ord';
     }
     return this._cards;
   },

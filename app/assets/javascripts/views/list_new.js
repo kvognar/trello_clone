@@ -1,3 +1,5 @@
+// TODO: Set ord to length of current collection
+
 TrelloClone.Views.ListNew = Backbone.View.extend({
   template: JST['lists/new'],
   
@@ -18,6 +20,7 @@ TrelloClone.Views.ListNew = Backbone.View.extend({
     var lists = this.collection
     var $form = $(event.currentTarget);
     var formData = $form.serializeJSON();
+    formData.list.ord = this.collection.length; 
     var newList = new TrelloClone.Models.List(formData.list);
     newList.save({}, {
       success: function () {
