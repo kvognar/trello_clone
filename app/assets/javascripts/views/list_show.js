@@ -7,9 +7,9 @@ TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
     });
     
     
-    // this.model.cards().forEach(function (card) {
-    //   this.addCard(card);
-    // }.bind(this));
+    this.model.cards().forEach(function (card) {
+      this.addCard(card);
+    }.bind(this));
     this.addSubview('.card-form', newCardView);
     
     this.listenTo(this.model, 'sync', this.render);

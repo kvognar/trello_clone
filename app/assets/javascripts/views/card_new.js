@@ -23,7 +23,7 @@ TrelloClone.Views.CardNew = Backbone.View.extend({
     newCard.save({}, {
       success: function () {
         cards.add(newCard);
-        $form.find('#card-title').val('');
+        $form.find('.card-title').val('');
       }
     });
     
