@@ -14,6 +14,7 @@ TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
     
     this.listenTo(this.model, 'sync', this.render);
     this.listenTo(this.model.cards(), 'add', this.addCard);
+    this.listenTo(this.model.cards(), 'remove', this.removeCard)
   },
   
   attributes: function() {
@@ -25,38 +26,83 @@ TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
   className: "list-view",
   
   events: {
-    "sortstop .card-container": "saveSort"
+    "sortreceive .card-container": "receiveCard",
+    "sortremove .card-container": "takeCard",
+    "sortstop .card-container": "sortCards"
   },
   
-  saveSort: function (event, ui) {
-    event.stopPropagation();
-    console.log("card swap");
+  takeCard: function (event, ui) {
+    console.log("remove card");
+    var card = this.model.cards().get(ui.item.data('id'));
+    var cardSubview = _.find(this.subviews('.card-container'), function (subview) {
+      return subview.model === card;
+    });
+    this.removeSubview('.card-container', cardSubview);
+    this.orderCards();
+  },
+  
+  receiveCard: function (event, ui) {
+    console.log("receive card");
     
-    var $card = ui.item;
-    var oldParent = this.model; // event is called by original owner of card
-    var $newParent = $card.parent().parent();
-    var newParent = oldParent.collection.get($newParent.data('id'));
-    var $siblings = $card.parent().find('.card-view');
-    var landingCardOrder = $siblings.map(function(idx, card) { 
+    var list = this.model;
+    var sender = list.collection.get(ui.sender.parent().data('id'));
+    var card = sender.cards().get(ui.item.data('id'));
+    
+    // debugger
+    
+    this.orderCards(event, ui);
+    
+    card.set('list_id', list.id);
+    card.save(); // will save again when sortCards is called
+    list.cards().add(card, { silent: true });
+    sender.cards().remove(card);
+    this.sortCards()
+  },
+  
+  // sortCards: function () {
+  //   var cards = this.model.cards();
+  //   var $cards = this.$el.find('.card-view');
+  //   var cardOrder = $cards.map(function(idx, card) {
+  //     return $(card).data('id');
+  //   });
+  //
+  //   cardOrder.each(function (index, id) {
+  //     var card = cards.get(id);
+  //     if (card.get("ord") !== index) {
+  //       card.set("ord", index)
+  //       card.save();
+  //     }
+  //   });
+  //
+  //   // debugger
+  //   // var cardOrder =
+  // },
+  
+  sortCards: function (event) {
+    if (event) { event.stopPropagation(); }
+    console.log("card swap");
+
+    var list = this.model;
+    var $cards = this.$el.find('.card-view');
+    var cardOrder = $cards.map(function(idx, card) { 
       return $(card).data('id');
     });
     
-    if (oldParent !== newParent) {
-      var movedCard = oldParent.cards().get($card.data('id'));
-      movedCard.set('list_id', newParent.id);
-      oldParent.cards().remove(movedCard);
-      newParent.cards().add(movedCard, { silent: true });
-    }
     
-    landingCardOrder.each(function (index, id) {
-      var card = newParent.cards().get(id);
+    cardOrder.each(function (index, id) {
+      var card = list.cards().get(id);
       if (card.get("ord") !== index) {
         card.set("ord", index)
         card.save();
       }
     });
-    newParent.cards().sort();
-    this.onRender();
+
+    list.cards().sort();
+    this.subviews('.card-container').sort(function(view1, view2) {
+      return view1.model.get('ord') - view2.model.get('ord');
+    });
+
+    // this.onRender();
 
   },
   
