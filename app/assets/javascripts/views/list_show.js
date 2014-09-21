@@ -28,7 +28,25 @@ TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
   events: {
     "sortreceive .card-container": "receiveCard",
     "sortremove .card-container": "takeCard",
-    "sortstop .card-container": "sortCards"
+    "sortstop .card-container": "sortCards",
+    "sortbeforestop .card-container": "setLandingOrd"
+  },
+  
+  // need to get the landing position of a moved card before
+  // its original parent removes the view
+  setLandingOrd: function (event, ui) {
+    // get all cards and filter out the placeholder
+    var $cards = ui.item.parent().find('.card-view')
+                                 .filter(function (idx, card){
+                                   return $(card).data('id') !== undefined
+                                 });    
+    
+    for (var i = 0, n = $cards.length; i < n; i++) {
+      if ($($cards[i]).data('id') === ui.item.data('id')) {
+        ui.item.newOrd = i;
+        break;
+      }
+    }    
   },
   
   takeCard: function (event, ui) {
@@ -38,48 +56,32 @@ TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
       return subview.model === card;
     });
     this.removeSubview('.card-container', cardSubview);
-    this.orderCards();
+    this.sortCards();
+    ui.item.cardSubview = cardSubview;
   },
   
   receiveCard: function (event, ui) {
     console.log("receive card");
-    
+    // debugger
     var list = this.model;
     var sender = list.collection.get(ui.sender.parent().data('id'));
     var card = sender.cards().get(ui.item.data('id'));
     
-    // debugger
-    
-    this.orderCards(event, ui);
-    
+                           
+                           
     card.set('list_id', list.id);
     card.save(); // will save again when sortCards is called
     list.cards().add(card, { silent: true });
     sender.cards().remove(card);
+    this.addSubviewAtIndex('.card-container',
+                           ui.item.cardSubview,
+                           ui.item.newOrd);
+    
     this.sortCards()
   },
   
-  // sortCards: function () {
-  //   var cards = this.model.cards();
-  //   var $cards = this.$el.find('.card-view');
-  //   var cardOrder = $cards.map(function(idx, card) {
-  //     return $(card).data('id');
-  //   });
-  //
-  //   cardOrder.each(function (index, id) {
-  //     var card = cards.get(id);
-  //     if (card.get("ord") !== index) {
-  //       card.set("ord", index)
-  //       card.save();
-  //     }
-  //   });
-  //
-  //   // debugger
-  //   // var cardOrder =
-  // },
-  
   sortCards: function (event) {
-    if (event) { event.stopPropagation(); }
+    if (event) { event.stopPropagation();}
     console.log("card swap");
 
     var list = this.model;

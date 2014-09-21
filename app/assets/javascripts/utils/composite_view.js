@@ -6,8 +6,8 @@ Backbone.CompositeView = Backbone.View.extend({
   },
   
   addSubviewAtIndex: function (selector, subview, index) {
+    this.attachSubviewAtIndex(selector, subview.render(), index);
     this.subviews(selector).splice(index, 0, subview);
-    this.attachSubview(selector, subview.render());
   },
 
   attachSubview: function (selector, subview) {
@@ -17,6 +17,14 @@ Backbone.CompositeView = Backbone.View.extend({
     subview.delegateEvents();
     if (subview.attachSubviews) {
       subview.attachSubviews();
+    }
+  },
+  
+  attachSubviewAtIndex: function(selector, subview, index) {
+    if (index >= this.subviews(selector).length) {
+      this.$(selector).append(subview.$el);
+    } else {
+      this.$(this.subviews(selector)[index].$el).before(subview.$el);
     }
   },
 
