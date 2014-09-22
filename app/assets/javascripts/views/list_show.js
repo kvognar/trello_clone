@@ -57,12 +57,13 @@ TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
     });
     this.removeSubview('.card-container', cardSubview);
     this.sortCards();
+    
+    // attach subview to ui item for transfer to receiver
     ui.item.cardSubview = cardSubview;
   },
   
   receiveCard: function (event, ui) {
     console.log("receive card");
-    // debugger
     var list = this.model;
     var sender = list.collection.get(ui.sender.parent().data('id'));
     var card = sender.cards().get(ui.item.data('id'));
