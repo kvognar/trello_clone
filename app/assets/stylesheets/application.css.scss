@@ -20,7 +20,9 @@
   display: inline-block;
 }
 
-
+#main {
+  margin: 0 40px 40px 40px;
+}
 
 .list-show {
   width: 260px;
@@ -63,5 +65,14 @@
   padding: 10px;
   margin: 5px;
   display: inline-block;
+}
+
+#new-list-form, #new-board-form {
+  input[type="text"] {
+    width: 400px;
+  }
+  input {
+    display: inline;
+  }
 }
 
