@@ -1,6 +1,15 @@
 TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
   template: JST['lists/show'],
   
+  className: "list-view",
+  
+  events: {
+    "sortreceive .card-container": "receiveCard",
+    "sortremove .card-container": "takeCard",
+    "sortstop .card-container": "sortCards",
+    "sortbeforestop .card-container": "setLandingOrd"
+  },
+  
   initialize: function () {
     var newCardView = new TrelloClone.Views.CardNew({
       collection: this.model.cards()
@@ -14,7 +23,7 @@ TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
     
     this.listenTo(this.model, 'sync', this.render);
     this.listenTo(this.model.cards(), 'add', this.addCard);
-    this.listenTo(this.model.cards(), 'remove', this.removeCard)
+    this.listenTo(this.model.cards(), 'destroy', this.destroyCard)
   },
   
   attributes: function() {
@@ -23,13 +32,12 @@ TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
     };
   },
   
-  className: "list-view",
-  
-  events: {
-    "sortreceive .card-container": "receiveCard",
-    "sortremove .card-container": "takeCard",
-    "sortstop .card-container": "sortCards",
-    "sortbeforestop .card-container": "setLandingOrd"
+  destroyCard: function (card, collection) {
+    var cardViews = this.subviews('.card-container');
+    var cardView = _(cardViews).find(function (cardView) {
+      return cardView.model == card;
+    });
+    this.removeSubview('.card-container', cardView);
   },
   
   // need to get the landing position of a moved card before
@@ -78,8 +86,11 @@ TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
                            ui.item.cardSubview,
                            ui.item.newOrd);
     
-    this.sortCards()
+    this.sortCards();
+    ui.item.cardSubview.delegateEvents();
   },
+  
+  
   
   sortCards: function (event) {
     if (event) { event.stopPropagation();}
@@ -105,7 +116,7 @@ TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
       return view1.model.get('ord') - view2.model.get('ord');
     });
 
-    // this.onRender();
+    this.onRender();
 
   },
   
@@ -127,5 +138,9 @@ TrelloClone.Views.ListShow = Backbone.CompositeView.extend({
     this.$('.card-container').sortable({
       connectWith: '.card-container'
     });
+    // debugger
+    // this.subviews().each(function (subview) {
+    //   subview.delegateEvents();
+    // });
   }
 });

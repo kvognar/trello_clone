@@ -55,7 +55,24 @@
   padding: 10px;
   margin: 5px;
   display: block;
+  
+  .card-title {
+    float: left;
+    width: 80%;
+  }
+  
+  button.remove-card {
+    float: right;
+    visibility: hidden;
+    width: 20%;
+  }
 }
+
+.card-show:hover {
+  button.remove-card {
+    visibility: visible;
+  }
+};
 
 .board-button {
   width: 260px;
@@ -75,4 +92,5 @@
     display: inline;
   }
 }
+
 
