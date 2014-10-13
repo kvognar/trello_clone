@@ -28,7 +28,7 @@
   width: 260px;
   display: inline-block;
   border-radius: 5px;
-  background-color: lightgreen;
+  background-color: lightblue;
   padding: 10px;
   margin: 12px;
   
@@ -76,12 +76,20 @@
 
 .board-button {
   width: 260px;
-  background-color: plum;
+  background-color: darkblue;
   height: 80px;
   border-radius: 5px;
   padding: 10px;
   margin: 5px;
   display: inline-block;
+  
+  a {
+    color: lightblue;
+  }
+  a:hover {
+    color: azure;
+    text-decoration: none;
+  };
 }
 
 #new-list-form, #new-board-form {
@@ -94,3 +102,19 @@
 }
 
 
+.user-form {
+  border: thin solid darkblue;
+  border-radius: 10px;
+  width: 50%;
+  margin: 50px auto;
+  padding: 40px;
+  
+  .btn-success {
+    margin-top: 20px;
+  }
+  
+  input[type="submit"] {
+    display: inline;
+  }
+  
+}
